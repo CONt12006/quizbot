@@ -1,25 +1,30 @@
+<p align="center">
+  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
+  <a href="README.ru.md"><img alt="Русский" src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-555555?style=for-the-badge"></a>
+</p>
+
 # QuizBot
 
-**QuizBot** — Telegram-бот для проведения интерактивных квизов, написанный на **Go**.
+**QuizBot** is a Telegram bot for running interactive quizzes, written in **Go**.
 
-Организатор загружает квиз в JSON, создаёт игровую сессию и приглашает участников по Telegram-ссылке. Бот проводит вопросы по таймеру, принимает ответы, рассчитывает результаты и формирует итоговый рейтинг.
+The host uploads a quiz as JSON, creates a game session and invites participants with a Telegram link. The bot runs timed questions, collects answers, calculates results and builds the final leaderboard.
 
-## Возможности
+## Features
 
-* загрузка и валидация квизов из JSON;
-* создание отдельных игровых сессий;
-* приглашение участников через Telegram deep links;
-* lobby и регистрация участников;
-* таймер для каждого вопроса;
-* автоматический переход после ответа всех участников;
-* перемешивание вопросов и вариантов ответа;
-* подсчёт баллов и времени ответа;
+* uploading and validating quizzes from JSON;
+* separate game sessions;
+* inviting participants via Telegram deep links;
+* lobby and participant registration;
+* a timer for each question;
+* automatic advance once all participants have answered;
+* shuffled questions and answer options;
+* scoring by points and answer time;
 * leaderboard;
-* повторный запуск сохранённых квизов;
-* история проведённых игр;
-* экспорт результатов в CSV.
+* re-running saved quizzes;
+* history of past games;
+* exporting results to CSV.
 
-## Технологии
+## Tech stack
 
 * **Go**
 * **Telegram Bot API**
@@ -29,19 +34,19 @@
 * **net/http**
 * **JSON**
 
-## Архитектура
+## Architecture
 
 ```text
 quizbot/
-├── cmd/quizbot/       # запуск приложения
+├── cmd/quizbot/       # application entry point
 ├── interval/
-│   ├── quiz/          # бизнес-логика квиза
-│   ├── storage/       # слой хранения данных
-│   └── telegram/      # Telegram API и handlers
+│   ├── quiz/          # quiz business logic
+│   ├── storage/       # storage layer
+│   └── telegram/      # Telegram API and handlers
 └── go.mod
 ```
 
-Основная бизнес-логика отделена от Telegram API и слоя хранения данных через интерфейсы.
+The core business logic is decoupled from the Telegram API and the storage layer through interfaces.
 
 ```text
 Telegram
@@ -53,36 +58,36 @@ Quiz Engine
 Storage
 ```
 
-## Конкурентность
+## Concurrency
 
-Игровые сессии работают асинхронно с использованием **goroutines**, **channels** и таймеров.
+Game sessions run asynchronously using **goroutines**, **channels** and timers.
 
 ```go
 go e.runQuizLoop(ctx, runID, events)
 ```
 
-Состояние квизов и участников защищено через:
+Quiz and participant state is protected with:
 
 ```go
 sync.RWMutex
 ```
 
-`context.Context` используется для управления жизненным циклом и отмены выполнения.
+`context.Context` manages lifecycle and cancellation.
 
-## Рейтинг
+## Leaderboard
 
-После завершения квиза формируется leaderboard.
+A leaderboard is built when the quiz ends.
 
-Учитываются:
+Ranking criteria:
 
-1. количество набранных баллов;
-2. суммарное время ответа;
-3. Telegram ID как дополнительный tie-breaker.
+1. points scored;
+2. total answer time;
+3. Telegram ID as an extra tie-breaker.
 
-При одинаковом количестве баллов выше располагается участник, ответивший быстрее.
+With equal points, the participant who answered faster ranks higher.
 
 
-## Запуск
+## Running
 
 ```bash
 git clone <repository-url>
@@ -95,4 +100,4 @@ go run ./cmd/quizbot \
   --bot-username "<BOT_USERNAME>"
 ```
 
-После запуска отправьте боту JSON-файл с конфигурацией квиза.
+Once it is running, send the bot a JSON file with the quiz configuration.
